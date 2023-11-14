@@ -12,7 +12,7 @@ def make_plot(results):
         iterations = np.arange(len(results[i][0]))
         plt.plot(iterations, mean_func_values)
     plt.yscale("log")
-    plt.xscale("log")
+    # plt.xscale("log")
     plt.xlabel("Iteration")
     plt.ylabel("Value of the function")
     plt.title("Plot of the function values from iterations")
@@ -35,7 +35,7 @@ def make_ribbon_plot(results):
         )
         ax.plot(iterations, mean_func_values,  alpha=0.7)
     ax.set_yscale("log")
-    ax.set_xscale("log")
+    # ax.set_xscale("log")
     ax.set_xlabel("Iteration")
     ax.set_ylabel("Value of the function")
     ax.set_title("Ribbon Plot of the function values from iterations")
@@ -44,12 +44,12 @@ def make_ribbon_plot(results):
     plt.show()  
 
 
-class symulation_results:
+class simulation_results:
     def __init__(self, length):
         self.optim_results = [[] for _ in range(length)]
-        self.sum = [0] * length
+        self.sum = [0] * length #wywalić przy oddaniu
 
-    def symulation_mean(self, i):
+    def symulation_mean(self, i): #wywalić przy oddaniu
         return self.sum[i] / len(self.optim_results[i])
 
     def add_new_result(self, optim_result, i):
@@ -86,7 +86,7 @@ class one_fifth_succ_rule:
         return successful_mutations, mutation_stren
 
 
-class Evolutionary:
+class Evolution_Solver:
     def __init__(self, function, x0, params, mut_stren_adapt_policy):
         self.f = function
         self.params = params
@@ -108,7 +108,7 @@ class Evolutionary:
             self.result.min_point = mut_point
         self.result.func_values.append(self.result.min_func_value)
 
-    def evolution_algorithm(self) -> optim_result:
+    def solver(self):
         for i in range(self.params.max_iter):
             random_point = [random.gauss(0, 1) for _ in range(self.point_size)]
             mut_point = self.mutate(random_point, self.params.mutation_stren)
@@ -119,6 +119,7 @@ class Evolutionary:
             ) = self.mut_stren_adapt_policy.update_mutation_stren(
                 self.success_mutations, i, self.params.mutation_stren
             )
+            
 
 
 if __name__ == "__main__":
@@ -126,15 +127,15 @@ if __name__ == "__main__":
     mut_stren_adapt_policy = one_fifth_succ_rule(10.0)
     # must_stren_list = [one_fifth_succ_rule(0.005), one_fifth_succ_rule(1.0), one_fifth_succ_rule(50.0), one_fifth_succ_rule(1000.0)]
     # params_list = [params_t(0.1, 10000), params_t(0.1, 10000), params_t(0.1, 10000), params_t(0.1, 10000)]
-    params_list = [params_t(0.1, 10000)]
-    results = symulation_results(len(params_list))
+    params_list = [params_t(10.0, 10000)]
+    results = simulation_results(len(params_list))
     for i in range(len(params_list)):
         for _ in range(10):
-            eval = Evolutionary(f9, x0, params_list[0], mut_stren_adapt_policy)
-            eval.evolution_algorithm()
+            eval = Evolution_Solver(f1, x0, params_list[0], mut_stren_adapt_policy)
+            eval.solver()
             results.add_new_result(eval.result.func_values, i)
-            print(_,"Minimum dla f1:",eval.result.min_point,"Wartość funkcji celu:",eval.result.min_func_value)
-        print("Średnia: ", results.symulation_mean(i))
+            print(_,"Minimum dla f1:",eval.result.min_point,"Wartość funkcji celu:",eval.result.min_func_value)#wywalić do oddania
+        print("Średnia: ", results.symulation_mean(i)) #wywalić do oddania
 
     make_ribbon_plot(results.optim_results)
     make_plot(results.optim_results)
